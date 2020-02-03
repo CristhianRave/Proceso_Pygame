@@ -37,7 +37,7 @@ class Asteroide(pg.sprite.Sprite):
     h = 42
 
 
-    def __init__(self, x = 0, y = 0):
+    def __init__(self, x = 770, y = 0):
 
         self.x = x
         self.y = y
@@ -58,9 +58,8 @@ class Asteroide(pg.sprite.Sprite):
         self.animation_time = FPS//60
 
     @property
-    def image(self): 
+    def image(self):
         return self.imagenes[2]
-
 
     @property
     def position(self):

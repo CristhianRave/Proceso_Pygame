@@ -25,8 +25,8 @@ class Game:
         self.allSprites.add(self.asteroides)
 
         self.asteroide = []
-        for i in range(10):
-            ast = Asteroide(randint(0, 750), randint(0, 550))
+        for i in range(6):
+            ast = Asteroide(randint(770, 800), randint(0,500))
             self.asteroide.append(ast)     
 
     def gameOver(self):
@@ -63,7 +63,6 @@ class Game:
             
             for i in self.asteroide:
                 self.screen.blit(i.image, i.position)
-
 
             self.allSprites.update(dt)
             self.allSprites.draw(self.screen)
