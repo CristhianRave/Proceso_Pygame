@@ -6,10 +6,8 @@ from random import randint
 
 FPS = 60
 
-
 class Game:
     clock = pg.time.Clock()
-
 
     def __init__(self):
         self.screen = pg.display.set_mode((800,600))
@@ -26,7 +24,7 @@ class Game:
 
         self.asteroide = []
         for i in range(6):
-            ast = Asteroide(randint(770, 800), randint(0,500))
+            ast = Asteroide(randint(0, 750), randint(0,500))
             self.asteroide.append(ast)     
 
     def gameOver(self):
@@ -45,13 +43,11 @@ class Game:
                 if event.key == K_DOWN:
                     self.player.go_down()
 
-
         keys_pressed = pg.key.get_pressed()
         if keys_pressed[K_UP]:
             self.player.go_up()
         if keys_pressed[K_DOWN]:
             self.player.go_down()
-
 
     def mainloop(self):
         while True:
@@ -67,7 +63,6 @@ class Game:
             self.allSprites.update(dt)
             self.allSprites.draw(self.screen)
             
-
             pg.display.flip()
 
 

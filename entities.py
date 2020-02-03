@@ -31,10 +31,11 @@ class Nave(pg.sprite.Sprite):
 
 
 class Asteroide(pg.sprite.Sprite):
-    speed = 10
+    speed = 1
     imgs_asteroides ='asteroide_60.png', 'asteroide_100.png', 'asteroide_200.png'
     w = 44
     h = 42
+    dx = 3
 
 
     def __init__(self, x = 770, y = 0):
@@ -50,12 +51,7 @@ class Asteroide(pg.sprite.Sprite):
         for i in self.imgs_asteroides:
             imagen = pg.image.load('resources/images/{}'.format(i)).convert_alpha()
             self.imagenes.append(imagen)
-
-       
-        self.num_frames = len(self.imagenes)
-
-        self.current_time = 0
-        self.animation_time = FPS//60
+            
 
     @property
     def image(self):
@@ -64,3 +60,17 @@ class Asteroide(pg.sprite.Sprite):
     @property
     def position(self):
         return self.x, self.y
+
+        
+    def update(self, dt):
+        self.rect.x = self.rect.x + self.speed * self.dx
+        if self.rect.x >= 800 :
+            self.dx = self.dx * - 1
+       
+ 
+
+       
+  
+
+            
+ 
