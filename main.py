@@ -19,13 +19,13 @@ class Game:
 
         self.allSprites = pg.sprite.Group()
 
-        self.allSprites.add(self.player)
-        self.allSprites.add(self.asteroides)
-
         self.asteroide = []
         for i in range(6):
-            ast = Asteroide(randint(0, 750), randint(0,500))
-            self.asteroide.append(ast)     
+            ast = Asteroide(randint(750, 800), randint(0,500))
+            self.asteroide.append(ast)  
+
+        self.allSprites.add(self.asteroide)  
+        self.allSprites.add(self.player) 
 
     def gameOver(self):
         pg.quit()
@@ -56,9 +56,6 @@ class Game:
             self.handleEvents()
 
             self.screen.blit( self.background_image, (0,0))
-            
-            for i in self.asteroide:
-                self.screen.blit(i.image, i.position)
 
             self.allSprites.update(dt)
             self.allSprites.draw(self.screen)
@@ -72,7 +69,3 @@ if __name__ == '__main__':
     pg.init()
     game = Game()
     game.mainloop()
-
-
-
-

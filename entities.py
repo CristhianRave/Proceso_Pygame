@@ -38,7 +38,7 @@ class Asteroide(pg.sprite.Sprite):
     dx = 3
 
 
-    def __init__(self, x = 770, y = 0):
+    def __init__(self, x = 0, y = 0):
 
         self.x = x
         self.y = y
@@ -67,10 +67,9 @@ class Asteroide(pg.sprite.Sprite):
         if self.rect.x >= 800 :
             self.dx = self.dx * - 1
        
- 
+     
+
+
 
        
-  
-
-            
  
