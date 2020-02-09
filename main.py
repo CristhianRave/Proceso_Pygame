@@ -12,20 +12,31 @@ class Game:
     def __init__(self):
         self.screen = pg.display.set_mode((800,600))
         pg.display.set_caption ('Spaceships')
-
         self.background_image = pg.image.load('resources/images/fondo.png').convert()
+
         self.player = Nave()
-        self.asteroides = Asteroide()
+        self.asteroide = Asteroide()
 
         self.allSprites = pg.sprite.Group()
+        self.asteroidesGroup = pg.sprite.Group()
 
-        self.asteroide = []
-        for i in range(6):
-            ast = Asteroide(randint(750, 800), randint(0,500))
-            self.asteroide.append(ast)  
+        self.allSprites.add(self.player)
+        self.asteroidesGroup.add(self.asteroide)
 
-        self.allSprites.add(self.asteroide)  
-        self.allSprites.add(self.player) 
+        self.asteroides_en_pantalla = 20
+        self.new_asteroide = FPS//2
+        self.crear_asteroid = FPS*6
+ 
+    def crear_asteroides(self, dt):
+        
+        self.new_asteroide += dt
+        if  self.new_asteroide >= self.crear_asteroid:
+            self.asteroide = Asteroide(randint(780, 840), randint(-10, 550))
+            self.asteroide.speed = (randint(1, 3))
+
+            self.asteroidesGroup.add(self.asteroide)
+
+            self.new_asteroide = 0  # Se reinicia a cero para que  los obstaculos no salgan todos de golpe
 
     def gameOver(self):
         pg.quit()
@@ -52,17 +63,24 @@ class Game:
     def mainloop(self):
         while True:
             dt = self.clock.tick(FPS)
-
             self.handleEvents()
 
             self.screen.blit( self.background_image, (0,0))
+        
+            cant_asteroides_creados = len(self.asteroidesGroup)
+            if cant_asteroides_creados < self.asteroides_en_pantalla:
+                self.crear_asteroides(dt)
 
             self.allSprites.update(dt)
+            self.asteroidesGroup.update(dt)
+
             self.allSprites.draw(self.screen)
-            
+            self.asteroidesGroup.draw(self.screen)
+
+
+
+
             pg.display.flip()
-
-
 
 
 if __name__ == '__main__':
