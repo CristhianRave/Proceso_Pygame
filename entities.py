@@ -9,36 +9,52 @@ class Nave(pg.sprite.Sprite):
     img_nave = 'nave.png'
     speed = 5
     FPS = 60
-    vidas = 100
+    vidas = 3
     
     
     def __init__(self, x = 0, y = 270):
-
-        self.estado = 'normal'
-
+        
         pg.sprite.Sprite.__init__(self)
         self.x = x
         self.y = y
-
-        self.image = pg.image.load('resources/images/{}'.format(self.img_nave)).convert_alpha()
-        self.disfraz_normal= pg.image.load('resources/images/{}'.format(self.img_nave)).convert_alpha()
         
+        self.nave_normal = pg.image.load('resources/images/{}'.format(self.img_nave)).convert_alpha()
+        self.image = self.nave_normal
+
+        self.frames = []  
+        self.explotar = False       
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        self.w = self.rect.w
+        self.w = self.rect.w 
         self.h = self.rect.h
-        self.frames = []
+        self.contador = 5
         self.index = 0
         self.how_many = 0
         self.animation_time = self.FPS//2     
         self.current_time = 0
-        
+       # self.start()
+        self.loadFrames()
+
+        '''def start(self , x = 0, y = 270):
+            self.nave_normal = pg.image.load('resources/images/{}'.format(self.img_nave)).convert_alpha()
+            self.image = self.nave_normal
+            self.rect = self.image.get_rect()          
+            self.num_candidatos = 0
+            self.x = x
+            self.y = y
+            self.rect.x = self.x
+            self.rect.y = self.y
+            self.w = self.rect.w 
+            self.h = self.rect.h
+            self.go_up()
+            self.go_down()'''
+
     def go_up(self):
        self.rect.y = max(0, self.rect.y - self.speed)
 
     def go_down(self):
-       self.rect.y = min(self.rect.y + self.speed, 600-self.w)
+       self.rect.y = min(self.rect.y + self.speed, 535)
 
     def loadFrames(self): 
         dt = self.clock.tick(self.FPS)
@@ -59,47 +75,38 @@ class Nave(pg.sprite.Sprite):
 
     def comprobar_colision(self,group):
         colisiones = pg.sprite.spritecollide(self,group,True)
-        num_candidatos = len(colisiones)
-        if num_candidatos > 0:
-            self.estado = 'explo'
-            self.vidas -= 1         
-            print('Quedan', self.vidas, 'vidas')
-            return num_candidatos
+        self.num_candidatos = len(colisiones)
+        if self.num_candidatos > 0:
+            self.vidas -= 1      
+        return self.num_candidatos
     
 
     def update(self,dt):
+    
+        if  not self.explotar :
+            self.image = self.nave_normal
 
-        if self.estado == 'normal':
-            self.image = pg.image.load('resources/images/{}'.format(self.img_nave)).convert_alpha()
-
-        elif self.estado == 'explo':
-            self.image = pg.Surface((self.w, self.h), pg.SRCALPHA, 32)
-            self.image = self.loadFrames()
+        else:             
             self.current_time += dt
-            if self.current_time > self.animation_time:
-                self.current_time = 0
-                self.index += 1
-                if self.index >= self.how_many:
-                    self.index = 0
-                self.image = self.frames [self.index]
-                
-
-
-
+            if self.current_time >= self.animation_time:   
+                if self.index < len(self.frames) -1:                  
+                    self.index += 1    
+                else:
+                    self.explotar = False
+            self.image = self.frames[self.index]
 
 class Asteroide(pg.sprite.Sprite):    
-    
-    imgs_asteroides =('asteroide_60.png', 'asteroide_200.png', 'satelite.png', 'saturno.png', 'astronauta.png')
+    puntuacion = 0
+    imgs_asteroides =('asteroide_60.png', 'satelite.png', 'saturno.png', 'astronauta.png')
 
-    def __init__(self, x = randint(780, 800), y = randint(10,550), w = 0, h = 0, speed = 1, puntuacion = 0):
+    def __init__(self, x = randint(780, 800), y = randint(10,550), w = 0, h = 0, speed = 1):
         pg.sprite.Sprite.__init__(self)
         self.x = x
         self.y = y
         self.w = w
         self.h = h
         self.speed = speed  
-        self.puntuacion = puntuacion
-
+        
         
         self.asteroids = []     
         for img in self.imgs_asteroides:
@@ -112,17 +119,10 @@ class Asteroide(pg.sprite.Sprite):
         self.rect.y = y
         self.w = self.rect.w
         self.h = self.rect.h    
-       
-
-    def suma_score(self):
-        self.puntuacion += 10
-
-
 
     def update(self, dt):
         self.rect.x -= self.speed
-        if self.rect.x <= -170:  
-                        
+        if self.rect.x <= -self.rect.w:                      
             self.kill() 
             del self
 

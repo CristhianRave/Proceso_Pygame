@@ -3,58 +3,81 @@ from pygame.locals import *
 import sys
 from entities import *
 from random import randint
-#from main_explo import *
+from planetas import *
 
 FPS = 60
 
 class Game:
     clock = pg.time.Clock()
-    
+    nivel = 1
+    puntuacion = 0
 
     def __init__(self):
+        pg.font.init()
       
         self.screen = pg.display.set_mode((800,600))
         pg.display.set_caption ('Spaceships')
         self.background_image = pg.image.load('resources/images/fondo.png').convert()
-
-        self.player = Nave()
-
         self.font = pg.font.Font('resources/fonts/PressStart.ttf', 22)
-        
-        #self.player_explo = Nave_explo()
+        self.fonty = pg.font.Font('resources/fonts/PressStart.ttf', 42)
+    
+        self.player = Nave()
         self.asteroide = Asteroide()
+        self.planeta = Planeta()
+        self.nave_rotate = Nave_rotate()
 
         self.asteroidesGroup = pg.sprite.Group()
         self.naveGroup = pg.sprite.Group()
+        self.planetaGroup = pg.sprite.Group()
+        self.nave_rotateGroup = pg.sprite.Group()
 
         self.asteroidesGroup.add(self.asteroide)
         self.naveGroup.add(self.player)
-        #self.naveGroup.add(self.player_explo)
+               
+        
 
-
+        self.num_asteroides_creados = 0
         self.asteroides_en_pantalla = 15
-        self.new_asteroide = FPS*8
-        self.crear_asteroid = FPS*6
+        self.tiempo_para_crear_asteroide = FPS*10
+        self.crear_asteroide = FPS*8.
 
  
-    def crear_asteroides(self, dt):       
-        self.new_asteroide += dt
-        if  self.new_asteroide >= self.crear_asteroid:
+    def crear_asteroides(self, dt): 
+  
+        self.tiempo_para_crear_asteroide += dt
+        if  self.tiempo_para_crear_asteroide > self.crear_asteroide:
             self.asteroide = Asteroide(randint(780, 840), randint(10, 550))
             self.asteroide.speed = (randint(1, 2))
             self.asteroidesGroup.add(self.asteroide)
-            self.new_asteroide = 0 
+            self.num_asteroides_creados += 1
+            self.tiempo_para_crear_asteroide = 0 
+
+     
+    def asteroide_nivel_2(self, dt): 
+       
+        self.asteroide1 = Asteroide(randint(780, 840), randint(10, 550))
+        self.asteroide1.speed = (randint(2, 3))
+        self.asteroidesGroup.add(self.asteroide1)
+        self.num_asteroides_creados += 1
+
 
     def text(self):
         self.marcador_vidas = self.font.render('Vidas:', True, (255,255,255))
+        self.marcador_score = self.font.render('Puntos:', True, (255,255,255))
+        self.marcador_nivel = self.font.render('Nivel:', True, (255,255,255))
         self.marcador_vidas_num = self.font.render(str(self.player.vidas), True, (255,255,255))
-        self.marcador_score_num = self.font.render(str(self.asteroide.puntuacion), True, (255,255,255))
+        self.marcador_score_num = self.font.render(str(self.puntuacion), True, (255,255,255))
+        self.marcador_nivel_num = self.font.render(str(self.nivel), True, (255,255,255))
+        
 
 
     def gameOver(self):
-        if self.player.vidas == 0:
-            pg.quit()
-            sys.exit()
+        pass
+
+    def salir_juego(self):
+        pg.quit()
+        sys.exit()
+
 
     def handleEvents(self):
         for event in pg.event.get():
@@ -75,39 +98,91 @@ class Game:
         if keys_pressed[K_DOWN]:
             self.player.go_down()
 
+
+    def nivel_2(self,dt):
+        if  self.puntuacion  > 300  :
+            self.nivel = 2  
+            if self.cant_asteroides_creados < self.asteroides_en_pantalla:                
+                self.asteroide_nivel_2(dt)
+
+    def nivel_3(self,dt):
+        if  self.puntuacion  > 500  :
+            self.nivel = 3  
+            
+            if self.cant_asteroides_creados < self.asteroides_en_pantalla:                
+                self.asteroide_nivel_2(dt)
+
+    def intro_planeta(self,dt):
+        if self.puntuacion >= 600: 
+            self.num_asteroides_creados = 0
+            self.naveGroup.empty()
+            
+            
+
+            self.planetaGroup.add(self.planeta)      
+            self.planetaGroup.update(dt)
+            self.planetaGroup.draw(self.screen)
+
+            self.nave_rotateGroup.add(self.nave_rotate)
+            self.nave_rotateGroup.update(dt)
+            self.nave_rotateGroup.draw(self.screen)
+        
+
     def renderiza(self,dt):
 
-        self.screen.blit( self.background_image, (0,0))
+        self.screen.blit(self.background_image, (0,0))
+        self.screen.blit(self.marcador_score,(10, 10))
+        self.screen.blit(self.marcador_score_num,(170, 10))
+        self.screen.blit(self.marcador_vidas,(320, 10))
+        self.screen.blit(self.marcador_vidas_num,(460, 10))
+        self.screen.blit(self.marcador_nivel,(630, 10))
+        self.screen.blit(self.marcador_nivel_num,(760, 10))
+
         self.asteroidesGroup.update(dt)
         self.naveGroup.update(dt)
+        
     
         self.asteroidesGroup.draw(self.screen)
         self.naveGroup.draw(self.screen)
-
-        self.screen.blit(self.marcador_vidas,(10, 10))
-        self.screen.blit(self.marcador_vidas_num,(140, 10))
-        self.screen.blit(self.marcador_score_num,(290, 10))
         
+      
+    def bucle_partida(self,dt):
+        
+        self.handleEvents()
 
-    def mainloop(self):
+        self.player.comprobar_colision(self.asteroidesGroup)
+        if self.player.vidas == 1:
+            self.player.explotar = True
+            self.gameOver
+
+        self.cant_asteroides_creados = len(self.asteroidesGroup)
+        if self.cant_asteroides_creados < self.asteroides_en_pantalla:
+            self.crear_asteroides(dt)
+        
+        if  self.num_asteroides_creados > self.asteroides_en_pantalla:
+            self.puntuacion = self.num_asteroides_creados * 10
+
+        self.nivel_2(dt)
+        self.nivel_3(dt)
+        
+        self.text()
+        self.renderiza(dt)
+
+    def mainloop_juego(self):
+        
         while True:
 
             dt = self.clock.tick(FPS)
-            self.handleEvents()
-            self.text()
-            self.gameOver()
 
-            self.player.comprobar_colision(self.asteroidesGroup)
 
-            cant_asteroides_creados = len(self.asteroidesGroup)
-            if cant_asteroides_creados < self.asteroides_en_pantalla:
-                self.crear_asteroides(dt)
-
-            self.renderiza(dt)
+            if self.player.vidas > 0:
+                self.bucle_partida(dt)
+            
+            self.intro_planeta(dt)
             pg.display.flip()
 
 
 if __name__ == '__main__':
     pg.init()
     game = Game()
-    game.mainloop()
+    game.mainloop_juego()
