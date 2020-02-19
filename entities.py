@@ -9,7 +9,7 @@ class Nave(pg.sprite.Sprite):
     img_nave = 'nave.png'
     speed = 5
     FPS = 60
-    vidas = 50
+    vidas = 10
     
     
     def __init__(self, x = 0, y = 270):
@@ -30,24 +30,9 @@ class Nave(pg.sprite.Sprite):
         self.h = self.rect.h
         self.index = 0
         self.how_many = 0
-        self.animation_time = self.FPS *4   
+        self.animation_time = 64  
         self.current_time = 0
-        self.contador = 0
-        self.num_candidatos = 0
-        self.start()
         self.loadFrames()
-
-    def start(self, x = 0, y = 270):
-        
-        self.explotar = False
-        self.x = x
-        self.y = y
-
-        self.rect.x = self.x
-        self.rect.y = self.y
-        self.w = self.rect.w 
-        self.h = self.rect.h
-        self.speed = 5
 
     def go_up(self):
        self.rect.y = max(0, self.rect.y - self.speed)
@@ -75,12 +60,8 @@ class Nave(pg.sprite.Sprite):
         colisiones = pg.sprite.spritecollide(self,group,True)
         self.num_candidatos = len(colisiones)
         if self.num_candidatos > 0: 
-            self.contador = 1
-            if self.contador == 1:
-                self.explotar = True
             self.vidas -= 1   
-
-        return self.num_candidatos
+            self.explotar = True
 
 
     def update(self,dt):
@@ -95,11 +76,9 @@ class Nave(pg.sprite.Sprite):
                     self.index += 1    
                 else:
                     self.explotar = False
+                    self.current_time = 0
+                    self.index = 0
             self.image = self.frames[self.index]
-
-
-
-
 
 
 class Asteroide(pg.sprite.Sprite):    

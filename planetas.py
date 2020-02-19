@@ -64,13 +64,11 @@ class Nave_rotate(pg.sprite.Sprite):
     def rotar (self):
         self.imagen = pg.transform.rotate(self.image, self.angulo)
         if self.rect.x > 400:
-            self.angulo += 1 % 180
+            self.angulo += 1 
         if self.angulo > 180:
             self.angulo = 180
         
         self.screen.blit(self.imagen, self.rect)
-
-
 
     def update(self, dt):
         self.current_time += dt 

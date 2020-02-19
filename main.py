@@ -151,7 +151,7 @@ class Game:
                 self.asteroide_nivel_2(dt)
 
     def intro_planeta(self,dt):
-        if self.puntuacion > 500: 
+        if self.puntuacion == 500: 
             self.num_asteroides_creados = 0
             self.naveGroup.empty()
             self.player.rect.y = 650
@@ -187,15 +187,9 @@ class Game:
     def bucle_partida(self,dt):
         
         self.handleEvents()
-
         self.player.comprobar_colision(self.asteroidesGroup)
 
-        if self.player.vidas == 1 :
-            self.player.vidas -= 1
-            self.player.start()
-            
-            
-
+        # Sacar a una funcion
         self.cant_asteroides_creados = len(self.asteroidesGroup)
         if self.cant_asteroides_creados < self.asteroides_en_pantalla:
             self.crear_asteroides(dt)
@@ -203,6 +197,7 @@ class Game:
         if  self.num_asteroides_creados > self.asteroides_en_pantalla:
             self.puntuacion = self.num_asteroides_creados * 10
 
+        # Unificar todos los niveles en una sola funcion con ifs.
         self.nivel_2(dt)
         self.nivel_3(dt)
         self.nivel_4(dt)
