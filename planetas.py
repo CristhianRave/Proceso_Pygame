@@ -85,6 +85,3 @@ class Nave_rotate(pg.sprite.Sprite):
             self.speed = 0            
             self.muestra_texto()
         
-
-
-

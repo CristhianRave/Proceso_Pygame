@@ -9,7 +9,7 @@ class Nave(pg.sprite.Sprite):
     img_nave = 'nave.png'
     speed = 5
     FPS = 60
-    vidas = 3
+    vidas = 50
     
     
     def __init__(self, x = 0, y = 270):
@@ -20,7 +20,7 @@ class Nave(pg.sprite.Sprite):
         
         self.nave_normal = pg.image.load('resources/images/{}'.format(self.img_nave)).convert_alpha()
         self.image = self.nave_normal
-
+        #self.sound_explo = pg.mixer.Sound('resources/sounds/Explo.wav')
         self.frames = []  
         self.explotar = False       
         self.rect = self.image.get_rect()
@@ -28,27 +28,26 @@ class Nave(pg.sprite.Sprite):
         self.rect.y = y
         self.w = self.rect.w 
         self.h = self.rect.h
-        self.contador = 5
         self.index = 0
         self.how_many = 0
-        self.animation_time = self.FPS//2     
+        self.animation_time = self.FPS *4   
         self.current_time = 0
-       # self.start()
+        self.contador = 0
+        self.num_candidatos = 0
+        self.start()
         self.loadFrames()
 
-        '''def start(self , x = 0, y = 270):
-            self.nave_normal = pg.image.load('resources/images/{}'.format(self.img_nave)).convert_alpha()
-            self.image = self.nave_normal
-            self.rect = self.image.get_rect()          
-            self.num_candidatos = 0
-            self.x = x
-            self.y = y
-            self.rect.x = self.x
-            self.rect.y = self.y
-            self.w = self.rect.w 
-            self.h = self.rect.h
-            self.go_up()
-            self.go_down()'''
+    def start(self, x = 0, y = 270):
+        
+        self.explotar = False
+        self.x = x
+        self.y = y
+
+        self.rect.x = self.x
+        self.rect.y = self.y
+        self.w = self.rect.w 
+        self.h = self.rect.h
+        self.speed = 5
 
     def go_up(self):
        self.rect.y = max(0, self.rect.y - self.speed)
@@ -57,7 +56,6 @@ class Nave(pg.sprite.Sprite):
        self.rect.y = min(self.rect.y + self.speed, 535)
 
     def loadFrames(self): 
-        dt = self.clock.tick(self.FPS)
         self.w = 128
         self.h = 128
         self.sprite_sheet = pg.image.load('resources/images/bomb-sprite.png').convert_alpha()
@@ -76,14 +74,18 @@ class Nave(pg.sprite.Sprite):
     def comprobar_colision(self,group):
         colisiones = pg.sprite.spritecollide(self,group,True)
         self.num_candidatos = len(colisiones)
-        if self.num_candidatos > 0:
-            self.vidas -= 1      
+        if self.num_candidatos > 0: 
+            self.contador = 1
+            if self.contador == 1:
+                self.explotar = True
+            self.vidas -= 1   
+
         return self.num_candidatos
-    
+
 
     def update(self,dt):
     
-        if  not self.explotar :
+        if not  self.explotar :
             self.image = self.nave_normal
 
         else:             
@@ -94,6 +96,11 @@ class Nave(pg.sprite.Sprite):
                 else:
                     self.explotar = False
             self.image = self.frames[self.index]
+
+
+
+
+
 
 class Asteroide(pg.sprite.Sprite):    
     puntuacion = 0
@@ -125,6 +132,3 @@ class Asteroide(pg.sprite.Sprite):
         if self.rect.x <= -self.rect.w:                      
             self.kill() 
             del self
-
-        
-        

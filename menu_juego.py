@@ -47,7 +47,7 @@ class Menu():
             elif tecla_pulsada[K_RETURN]:
 
                 opcion_menu, funcion = self.opciones[self.seleccionado]
-                print('Selecciona Opcion -> {}'.format(opcion_menu))
+                print('{}'.format(opcion_menu))
                 funcion()
 
         if self.seleccionado < 0:
